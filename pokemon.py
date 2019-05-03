@@ -1,11 +1,16 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import requests, webbrowser, sys, season
 from bs4 import BeautifulSoup as BS
 
 global episode
+global size
+size = 0
 episode = "episode.txt"
 
 def conect(serie, last_episode):
+    size = len(last_episode)
+    print (size)
     print("Conectando...")
     url = season.season(serie)
     print(serie)
@@ -20,15 +25,21 @@ def conect(serie, last_episode):
     print (last_episode)
     global episodes
     episodes = len(content)
-    for element in content :
-        print (element.text[2:])
-        print (last_episode + " :")
-        if (last_episode == element.text[-2:]):
-            link = element["href"]
-            print (element["href"])
-            webbrowser.open(link)
+    for x in range(5):
+        for element in content :
+            print (element.text[2:])
+            print (str(last_episode) + " :")
+            if (last_episode == element.text[-size:]):
+                link = element["href"]
+                print (element["href"])
+                webbrowser.open(link)
+                break
+        last_episode = int(last_episode) + int(1)
 
-            break
+def just_watch():
+    serie = input("Digite a temporada que deseja assistir : ")
+    episode = int(input("Digite o número do episódio que deseja assistir : ")) - 1
+    conect(serie, episode)
 
 def last_season():
     f = open(episode, "r")
@@ -39,6 +50,8 @@ def last_episode():
     f = open(episode, "r")
     a = f.readline()
     b = f.readline()
+    size = len(str(b))
+    print(size)
     return (b)
 
 def insert() : 
@@ -49,7 +62,6 @@ def insert() :
     last_episode = input("Diga o último episódio assistido : ")
     f = open(episode, "w")
     f.write(season + "\n")
-    #f.write("\n")
     f.write(last_episode)
     f.close()
     print("Deseje realizar mais alguma coisa ?")
@@ -82,6 +94,8 @@ def next_episode():
     conect(last_season() , last_episode())
 
 def main():
+    last_season()
+    last_episode()
 
     print("Digite o que deseja fazer : ")
     print("1 - Inserir último episódio assido.")
@@ -89,7 +103,7 @@ def main():
     print("3 - Assistir próximo episódio.")
     print("4 - Assistir episódio específico.")
     option = 0
-    while (option != 1 and option != 2 and option != 3):
+    while (option != 1 and option != 2 and option != 3 and option != 4):
         try:
             option = int(input())
         except:
@@ -102,6 +116,8 @@ def main():
     elif (option == 3):
         conect(last_season() , last_episode())
         #next_episode()
+    elif (option == 4):
+        just_watch()
     else:
         print ("Opção inválida.")
 
